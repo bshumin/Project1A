@@ -27,6 +27,8 @@ namespace RogueSharpV3Tutorial
         private static RLConsole _inventoryConsole;
         // Main map for navigation
         public static DungeonMap DungeonMap { get; private set; }
+        // Player Character
+        public static Player Player { get; private set; }
 
         public static void Main()
         {
@@ -42,8 +44,13 @@ namespace RogueSharpV3Tutorial
             _statConsole = new RLConsole(_statWidth, _statHeight);
             _inventoryConsole = new RLConsole(_inventoryWidth, _inventoryHeight);
 
+            // Create the player
+            Player = new Player();
+
             MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight);
             DungeonMap = mapGenerator.CreateMap();
+
+            DungeonMap.UpdatePlayerFieldOfView();
 
             // Set up a handler for RLNET's Update event
             _rootConsole.Update += OnRootConsoleUpdate;
@@ -78,6 +85,7 @@ namespace RogueSharpV3Tutorial
         private static void OnRootConsoleRender(object sender, UpdateEventArgs e)
         {
             DungeonMap.Draw(_mapConsole);
+            Player.Draw(_mapConsole, DungeonMap);
             // Blit the sub consoles to the root console in the correct locations
             RLConsole.Blit(_mapConsole, 0, 0, _mapWidth, _mapHeight, _rootConsole, 0, _inventoryHeight);
             RLConsole.Blit(_statConsole, 0, 0, _statWidth, _statHeight, _rootConsole, _mapWidth, 0);

@@ -48,5 +48,20 @@ namespace RogueSharpV3Tutorial.Core
                 }
             }
         }
+        // This method will be called any time we move the player to update field-of-view
+        public void UpdatePlayerFieldOfView()
+        {
+            Player player = Game.Player;
+            // Compute the field-of-view based on the player's location and awareness
+            ComputeFov(player.X, player.Y, player.Awareness, true);
+            // Mark all cells in field-of-view as having been explored
+            foreach (Cell cell in GetAllCells())
+            {
+                if (IsInFov(cell.X, cell.Y))
+                {
+                    SetCellProperties(cell.X, cell.Y, cell.IsTransparent, cell.IsWalkable, true);
+                }
+            }
+        }
     }
 }
