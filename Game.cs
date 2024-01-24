@@ -1,5 +1,6 @@
 ﻿using RLNET;
 using RogueSharpV3Tutorial.Core;
+using RogueSharpV3Tutorial.Systems;
 namespace RogueSharpV3Tutorial
 {
     public static class Game
@@ -24,6 +25,9 @@ namespace RogueSharpV3Tutorial
         private static readonly int _inventoryWidth = 80;
         private static readonly int _inventoryHeight = 11;
         private static RLConsole _inventoryConsole;
+        // Main map for navigation
+        public static DungeonMap DungeonMap { get; private set; }
+
         public static void Main()
         {
             // This must be the exact name of the bitmap font file we are using or it will error.
@@ -37,12 +41,17 @@ namespace RogueSharpV3Tutorial
             _messageConsole = new RLConsole(_messageWidth, _messageHeight);
             _statConsole = new RLConsole(_statWidth, _statHeight);
             _inventoryConsole = new RLConsole(_inventoryWidth, _inventoryHeight);
+
+            MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight);
+            DungeonMap = mapGenerator.CreateMap();
+
             // Set up a handler for RLNET's Update event
             _rootConsole.Update += OnRootConsoleUpdate;
             // Set up a handler for RLNET's Render event
             _rootConsole.Render += OnRootConsoleRender;
             // Begin RLNET's game loop
             _rootConsole.Run();
+
         }
         // Event handler for RLNET's Update event
         private static void OnRootConsoleUpdate(object sender, UpdateEventArgs e)
@@ -68,6 +77,7 @@ namespace RogueSharpV3Tutorial
         // Event handler for RLNET's Render event
         private static void OnRootConsoleRender(object sender, UpdateEventArgs e)
         {
+            DungeonMap.Draw(_mapConsole);
             // Blit the sub consoles to the root console in the correct locations
             RLConsole.Blit(_mapConsole, 0, 0, _mapWidth, _mapHeight, _rootConsole, 0, _inventoryHeight);
             RLConsole.Blit(_statConsole, 0, 0, _statWidth, _statHeight, _rootConsole, _mapWidth, 0);
