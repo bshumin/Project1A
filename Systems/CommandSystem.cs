@@ -17,9 +17,33 @@ public class CommandSystem
                     y = Game.Player.Y - 1;
                     break;
                 }
+            case Direction.UpRight:
+                {
+                    y = Game.Player.Y - 1;
+                    x = Game.Player.X + 1;
+                    break;
+                }
+            case Direction.UpLeft:
+                {
+                    y = Game.Player.Y - 1;
+                    x = Game.Player.X - 1;
+                    break;
+                }
             case Direction.Down:
                 {
                     y = Game.Player.Y + 1;
+                    break;
+                }
+            case Direction.DownRight:
+                {
+                    y = Game.Player.Y + 1;
+                    x = Game.Player.X + 1;
+                    break;
+                }
+            case Direction.DownLeft:
+                {
+                    y = Game.Player.Y + 1;
+                    x = Game.Player.X - 1;
                     break;
                 }
             case Direction.Left:
