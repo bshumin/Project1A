@@ -1,6 +1,7 @@
 ﻿using RLNET;
 using RogueSharp.Random;
 using RogueSharpV3Tutorial.Core;
+using RogueSharpV3Tutorial.Systems;
 using System;
 namespace RogueSharpV3Tutorial
 {
@@ -31,7 +32,8 @@ namespace RogueSharpV3Tutorial
 
         public static DungeonMap DungeonMap { get; private set; }
         public static CommandSystem CommandSystem { get; private set; }
-        public static Player Player { get; private set; }
+        public static Player Player { get; set; }
+        public static MessageLog MessageLog { get; private set; }
         public static IRandom Random { get; private set; }
 
         private static bool _renderRequired = true;
@@ -44,7 +46,7 @@ namespace RogueSharpV3Tutorial
 
             // The title will appear at the top of the console window 
             // also include the seed used to generate the level
-            string consoleTitle = $"RougeSharp V3 Tutorial - Level 1 - Seed {seed}";
+            string consoleTitle = $"RougeSharp V3 Tutorial - Level 1";
 
             // This must be the exact name of the bitmap font file we are using or it will error.
             string fontFileName = "terminal8x8.png";
@@ -56,8 +58,6 @@ namespace RogueSharpV3Tutorial
             _statConsole = new RLConsole(_statWidth, _statHeight);
             _inventoryConsole = new RLConsole(_inventoryWidth, _inventoryHeight);
 
-            Player = new Player();
-
             CommandSystem = new CommandSystem();
 
             MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight, 20, 13, 7);
@@ -68,11 +68,10 @@ namespace RogueSharpV3Tutorial
             // Set background color and text for each console so that we can verify they are in the correct positions
             _mapConsole.SetBackColor(0, 0, _mapWidth, _mapHeight, Colors.FloorBackground);
 
-            _messageConsole.SetBackColor(0, 0, _messageWidth, _messageHeight, Swatch.DbDeepWater);
-            _messageConsole.Print(1, 1, "Messages", Colors.TextHeading);
-
-            _statConsole.SetBackColor(0, 0, _statWidth, _statHeight, Swatch.DbOldStone);
-            _statConsole.Print(1, 1, "Stats", Colors.TextHeading);
+            // Create a new MessageLog and print the random seed used to generate the level
+            MessageLog = new MessageLog();
+            MessageLog.Add("The rogue arrives on level 1");
+            MessageLog.Add($"Level created with seed '{seed}'");
 
             _inventoryConsole.SetBackColor(0, 0, _inventoryWidth, _inventoryHeight, Swatch.DbWood);
             _inventoryConsole.Print(1, 1, "Inventory", Colors.TextHeading);
@@ -133,6 +132,7 @@ namespace RogueSharpV3Tutorial
 
             if (didPlayerAct)
             {
+                // Every time the player acts increment the steps and log it
                 _renderRequired = true;
             }
         }
@@ -144,6 +144,9 @@ namespace RogueSharpV3Tutorial
             {
                 DungeonMap.Draw(_mapConsole);
                 Player.Draw(_mapConsole, DungeonMap);
+                MessageLog.Draw(_messageConsole);
+                Player.DrawStats(_statConsole);
+
                 // Blit the sub consoles to the root console in the correct locations
                 RLConsole.Blit(_mapConsole, 0, 0, _mapWidth, _mapHeight, _rootConsole, 0, _inventoryHeight);
                 RLConsole.Blit(_messageConsole, 0, 0, _messageWidth, _messageHeight, _rootConsole, 0, _screenHeight - _messageHeight);
