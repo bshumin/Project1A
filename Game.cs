@@ -35,6 +35,8 @@ namespace Project1A
         public static CommandSystem CommandSystem { get; private set; }
         public static Player Player { get; set; }
         public static MessageLog MessageLog { get; private set; }
+        public static SchedulingSystem SchedulingSystem { get; private set; }
+
         public static IRandom Random { get; private set; }
 
         private static bool _renderRequired = true;
@@ -47,7 +49,7 @@ namespace Project1A
 
             // The title will appear at the top of the console window 
             // also include the seed used to generate the level
-            string consoleTitle = $"RougeSharp V3 Tutorial - Level 1";
+            string consoleTitle = $"Rouge - Level 1";
 
             // This must be the exact name of the bitmap font file we are using or it will error.
             string fontFileName = "terminal8x8.png";
@@ -60,6 +62,7 @@ namespace Project1A
             _inventoryConsole = new RLConsole(_inventoryWidth, _inventoryHeight);
 
             CommandSystem = new CommandSystem();
+            SchedulingSystem = new SchedulingSystem();
 
             MapGenerator mapGenerator = new MapGenerator(_mapWidth, _mapHeight, 20, 13, 7);
             DungeonMap = mapGenerator.CreateMap();
@@ -91,49 +94,41 @@ namespace Project1A
             bool didPlayerAct = false;
             RLKeyPress keyPress = _rootConsole.Keyboard.GetKeyPress();
 
-            if (keyPress != null)
+            if (CommandSystem.IsPlayerTurn)
             {
-                if (keyPress.Key == RLKey.Up || keyPress.Key == RLKey.W)
+                if (keyPress != null)
                 {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.Up);
+                    if (keyPress.Key == RLKey.Up)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Direction.Up);
+                    }
+                    else if (keyPress.Key == RLKey.Down)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Direction.Down);
+                    }
+                    else if (keyPress.Key == RLKey.Left)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Direction.Left);
+                    }
+                    else if (keyPress.Key == RLKey.Right)
+                    {
+                        didPlayerAct = CommandSystem.MovePlayer(Direction.Right);
+                    }
+                    else if (keyPress.Key == RLKey.Escape)
+                    {
+                        _rootConsole.Close();
+                    }
                 }
-                else if (keyPress.Key == RLKey.Down || keyPress.Key == RLKey.S)
+
+                if (didPlayerAct)
                 {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.Down);
-                }
-                else if (keyPress.Key == RLKey.Left || keyPress.Key == RLKey.A)
-                {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.Left);
-                }
-                else if (keyPress.Key == RLKey.Right || keyPress.Key == RLKey.D)
-                {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.Right);
-                }
-                else if (keyPress.Key == RLKey.Q && diagMove)
-                {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.UpLeft);
-                }
-                else if (keyPress.Key == RLKey.E && diagMove)
-                {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.UpRight);
-                }
-                else if (keyPress.Key == RLKey.Z && diagMove)
-                {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.DownLeft);
-                }
-                else if (keyPress.Key == RLKey.C && diagMove)
-                {
-                    didPlayerAct = CommandSystem.MovePlayer(Direction.DownRight);
-                }
-                else if (keyPress.Key == RLKey.Escape)
-                {
-                    _rootConsole.Close();
+                    _renderRequired = true;
+                    CommandSystem.EndPlayerTurn();
                 }
             }
-
-            if (didPlayerAct)
+            else
             {
-                // Every time the player acts increment the steps and log it
+                CommandSystem.ActivateMonsters();
                 _renderRequired = true;
             }
         }
@@ -143,7 +138,11 @@ namespace Project1A
             // Don't bother redrawing all of the consoles if nothing has changed.
             if (_renderRequired)
             {
-                DungeonMap.Draw(_mapConsole);
+                _mapConsole.Clear();
+                _statConsole.Clear();
+                _messageConsole.Clear();
+
+                DungeonMap.Draw(_mapConsole, _statConsole);
                 Player.Draw(_mapConsole, DungeonMap);
                 MessageLog.Draw(_messageConsole);
                 Player.DrawStats(_statConsole);
