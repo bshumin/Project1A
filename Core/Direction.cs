@@ -1,4 +1,4 @@
-﻿namespace RogueSharpV3Tutorial.Core
+﻿namespace Project1A.Core
 {
     // Direction values correspond to numpad numbers
     public enum Direction

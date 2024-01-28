@@ -1,5 +1,5 @@
-﻿using RogueSharpV3Tutorial.Core;
-using RogueSharpV3Tutorial;
+﻿using Project1A.Core;
+using Project1A;
 
 public class CommandSystem
 {

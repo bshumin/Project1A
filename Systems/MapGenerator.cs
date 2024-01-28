@@ -1,8 +1,10 @@
 ﻿using RogueSharp;
-using RogueSharpV3Tutorial.Core;
-using RogueSharpV3Tutorial;
+using Project1A.Core;
+using Project1A;
 using System.Linq;
 using System;
+using Project1A.Monsters;
+using RogueSharp.DiceNotation;
 
 public class MapGenerator
 {
@@ -89,6 +91,9 @@ public class MapGenerator
 
         PlacePlayer();
 
+        // After the existing PlacePlayer() call, add another call to PlaceMonsters()
+        PlaceMonsters();
+
         return _map;
     }
 
@@ -135,6 +140,34 @@ public class MapGenerator
         for (int y = Math.Min(yStart, yEnd); y <= Math.Max(yStart, yEnd); y++)
         {
             _map.SetCellProperties(xPosition, y, true, true);
+        }
+    }
+
+    private void PlaceMonsters()
+    {
+        foreach (var room in _map.Rooms)
+        {
+            // Each room has a 60% chance of having monsters
+            if (Dice.Roll("1D10") < 7)
+            {
+                // Generate between 1 and 4 monsters
+                var numberOfMonsters = Dice.Roll("1D4");
+                for (int i = 0; i < numberOfMonsters; i++)
+                {
+                    // Find a random walkable location in the room to place the monster
+                    Point randomRoomLocation = _map.GetRandomWalkableLocationInRoom(room);
+                    // It's possible that the room doesn't have space to place a monster
+                    // In that case skip creating the monster
+                    if (randomRoomLocation != null)
+                    {
+                        // Temporarily hard code this monster to be created at level 1
+                        var monster = Kobold.Create(1);
+                        monster.X = randomRoomLocation.X;
+                        monster.Y = randomRoomLocation.Y;
+                        _map.AddMonster(monster);
+                    }
+                }
+            }
         }
     }
 }

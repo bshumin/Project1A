@@ -1,7 +1,7 @@
 ﻿using RLNET;
 using System.Collections.Generic;
 
-namespace RogueSharpV3Tutorial.Systems
+namespace Project1A.Systems
 {
     // Represents a queue of messages that can be added to
     // Has a method for and drawing to an RLConsole

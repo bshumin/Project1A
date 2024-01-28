@@ -1,9 +1,10 @@
 ﻿using RLNET;
 using RogueSharp.Random;
-using RogueSharpV3Tutorial.Core;
-using RogueSharpV3Tutorial.Systems;
+using Project1A.Core;
+using Project1A.Systems;
 using System;
-namespace RogueSharpV3Tutorial
+
+namespace Project1A
 {
     public static class Game
     {

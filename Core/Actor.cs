@@ -1,9 +1,9 @@
 ﻿using RLNET;
 using RogueSharp;
-using RogueSharpV3Tutorial.Interfaces;
+using Project1A.Interfaces;
 
 
-namespace RogueSharpV3Tutorial.Core
+namespace Project1A.Core
 {
     public class Actor : IActor, IDrawable
     {

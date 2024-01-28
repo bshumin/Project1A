@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogueSharpV3Tutorial.Interfaces
+namespace Project1A.Interfaces
 {
     public interface IDrawable
     {
